@@ -9,19 +9,32 @@ int main()
     //rectangel dimensions
     const int rec_width{50};
     const int rec_height{80};
+    const int gravity{1};// this is p/f /f
     int posY{height-rec_height};//here we treat the rectangle as a single point on the top left corner of the rectangel of that width so height of the window would place the point at the bottom of the canvas and subtracting the height od the rectangel will place the actual rectangle on the bottn
     int velocity{0};
 
     SetTargetFPS(60);
     while(!WindowShouldClose())//since window should close will return true iff the x or the escape buttons are pressed
-    {
+    {// the body of the while loop executes every frame
         BeginDrawing();
         ClearBackground(WHITE);
+        if(posY>=height-rec_height)
+        {
+            //rectangle is on the ground
+            velocity=0;
+        }
+        else
+        {
+            //rectangle is in the air and need to come back due to gravity
+            velocity+=gravity;
+        }
         if(IsKeyPressed(KEY_SPACE))
         {
             velocity-=10;// always remember our convention that we need a negative value if we want our sprite to move upward from the bottom of the canvas
         }
-        posY+=velocity;
+        
+        
+        posY+=velocity;// this is what actually moves the rectangle
         DrawRectangle(width/2,posY,rec_width,rec_height,BLUE);
         EndDrawing();
     }

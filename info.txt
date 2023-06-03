@@ -1,0 +1,9 @@
+void BeginDrawing()
+In the context of the Raylib library, calling the BeginDrawing() function initializes the drawing frame and prepares the graphics system for rendering. 
+This typically involves setting up the necessary buffers, states, and resources to draw graphics.
+
+And each time the body of the while loop executes ...it is counted as a single frame
+
+void EndDrawing()
+The EndDrawing() function finalizes the frame by performing any necessary operations to ensure that the frame is displayed correctly on the screen. 
+This may involve swapping buffers, synchronizing with the display refresh rate, and other internal operations specific to the graphics system being used.
