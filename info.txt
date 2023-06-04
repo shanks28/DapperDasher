@@ -14,3 +14,7 @@ DrawTextureRec(texture,source,position,tinit);
 texture tis the sprite sheet itself
 source is a section in the sprite sheet or the image itself
 position is the 
+
+Delta Time calculating delta time helps decouple your game or animation logic from the frame rate and provides a more consistent, 
+responsive, and visually pleasing experience for users. It helps ensure that your application behaves as intended across different systems and devices, regardless of the 
+variability in frame rates.
