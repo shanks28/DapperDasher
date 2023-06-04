@@ -55,7 +55,7 @@ int main()
 
         DrawTextureRec(scrafy,scrafyrec,scrafyPos,WHITE);
 
-        EndDrawing();
+        EndDrawing();// this ensures that every frame is correctly rendered by the gpu
     }
     UnloadTexture(scrafy);
     CloseWindow();// this function is just included for convention as it uses some under the hood functionaloty to actually close the window
