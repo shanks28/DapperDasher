@@ -7,3 +7,10 @@ And each time the body of the while loop executes ...it is counted as a single f
 void EndDrawing()
 The EndDrawing() function finalizes the frame by performing any necessary operations to ensure that the frame is displayed correctly on the screen. 
 This may involve swapping buffers, synchronizing with the display refresh rate, and other internal operations specific to the graphics system being used.
+
+Sprite Sheets:A sprite is a 2d image that gets drawn on to the canvas a sprite has 4 components RGB and alpha
+a sprite sheet is a single image that contains multiple images this saves memory and this saves memory and we can just select a part of the sprite sheet and then draw only that part
+DrawTextureRec(texture,source,position,tinit);
+texture tis the sprite sheet itself
+source is a section in the sprite sheet or the image itself
+position is the 
