@@ -10,15 +10,20 @@ int main()
     // const int rec_width{50};
     // const int rec_height{80};
     const int gravity{3000};// this is in pixels/s /s
+    //nebula variables
+    Texture2D nebula=LoadTexture("D:/GameDev/DapperDasher/textures/12_nebula_spritesheet.png");//this is the sprite sheet itself
 
+    //scarfy variables
     Texture2D scrafy=LoadTexture("D:/GameDev/DapperDasher/textures/scarfy.png"); // this is a compound data type essentially making an object of the class texture2D and we can access all the functions  that come with the class and use it on the object itself
     Rectangle scrafyrec;//compound datatype
     scrafyrec.width=scrafy.width/6;
     scrafyrec.height=scrafy.height;
     scrafyrec.x=0;
     scrafyrec.y=0;
+    //animation frame
+    int frame{};
     
-    Vector2 scrafyPos;//compound datatype 
+    Vector2 scrafyPos;//compound datatype this is for the position of the scarfy sprite on the canvas
     scrafyPos.x=width/2-scrafyrec.width/2;// this splits the scrafy frame into 2 equal half and thus the image itself appears at the center of the screen
     scrafyPos.y=height-scrafyrec.height;// since we treate the image as a upper left point
 
@@ -29,6 +34,9 @@ int main()
     bool isInAir{1};
     //jump velocity
     const int jumpVel{-600};// px/s
+    //update time 
+    const float updateTime{1.0/12.0};
+    float runningTime{0};
 
     SetTargetFPS(60); // this tells the system that it should display 60 complete frame per second to  the screen and well if we dont use this function then the sprite will achieve the highest possible frame rate 
     while(!WindowShouldClose())//since window should close will return true iff the x or the escape buttons are pressed
@@ -36,7 +44,6 @@ int main()
         BeginDrawing();
         ClearBackground(WHITE);
         const float dT{GetFrameTime()};// this is the time duration between each frame and as the acutal number of frames increases then the dT reduces and viceversa
-
         if(scrafyPos.y>=height-scrafyrec.height)// this is the ground check condition
         {
             //rectangle is on the ground
@@ -55,11 +62,25 @@ int main()
         }
         
         scrafyPos.y+=velocity * dT;// this is what actually moves the rectangle we multiply the position with dT because the units change from pizels per sec to pixels per frame
-
+        //update running time
+        runningTime+=dT;
+        if(runningTime>=updateTime)
+        {
+            runningTime=0;
+            scrafyrec.x=frame*scrafyrec.width;
+            frame++;
+            if(frame>5)
+            {
+                frame=0;
+            }
+        }
+        //update anmation frame
+        
         DrawTextureRec(scrafy,scrafyrec,scrafyPos,WHITE);
 
         EndDrawing();// this ensures that every frame is correctly rendered by the gpu
     }
     UnloadTexture(scrafy);
+    UnloadTexture(nebula);
     CloseWindow();// this function is just included for convention as it uses some under the hood functionaloty to actually close the window
 }
