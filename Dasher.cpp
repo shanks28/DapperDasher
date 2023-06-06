@@ -1,5 +1,13 @@
 #include<cstdio>
 #include "raylib.h"
+struct AnimeData
+{
+    Rectangle rec;
+    Vector2 Pos;
+    int frame;
+    float updateTime;
+    float runningTime;
+};
 int main()
 {
     //window dimentsion
@@ -13,6 +21,13 @@ int main()
 
     //nebula variables
     Texture2D nebula=LoadTexture("D:/GameDev/DapperDasher/textures/12_nebula_spritesheet.png");//this is the sprite sheet itself
+    AnimeData nebData{
+        {0.0,0.0, nebula.width/8, nebula.height/8},//Rectangle rec
+        {width,height-nebula.height/8},//Vector 2 Pos
+        0,//int frame
+        1.0/12.0,//float updateTeime
+        0//Float runningTime
+    };
     Rectangle nebularec{0.0,0.0, nebula.width/8, nebula.height/8}; 
     //this is defined as x,y width and height this is just 1 rectangle
 
@@ -24,9 +39,28 @@ int main()
     int neb2Frame{};
     const float neb2updateTime{1.0/16.0};
     float neb2RunningTime;
+    //Nebula Animedata
+    AnimeData neb2Data{
+        {0.0,0.0,nebula.width/8,nebula.height/8}
+        ,{width+300,height-nebula.height/8}
+        ,0,
+        1.0/16.0
+        ,0.0
+    };
 
     //scarfy variables
     Texture2D scrafy=LoadTexture("D:/GameDev/DapperDasher/textures/scarfy.png"); // this is a compound data type essentially making an object of the class texture2D and we can access all the functions  that come with the class and use it on the object itself
+    AnimeData scarfyData;
+    scarfyData.rec.width=scrafy.width/6;
+    scarfyData.rec.height=scrafy.height;
+    scarfyData.rec.x=0;
+    scarfyData.rec.y=0;
+    scarfyData.Pos.x=width/2-scarfyData.rec.width/2;
+    scarfyData.Pos.y=height-scarfyData.rec.height;
+    scarfyData.frame=0;
+    scarfyData.updateTime=1.0/12.0;
+    scarfyData.runningTime=0.0;
+
     Rectangle scrafyrec;//compound datatype this is to select which particular image we want to select from the sprite sheet at any given point of time
     scrafyrec.width=scrafy.width/6;
     scrafyrec.height=scrafy.height;
