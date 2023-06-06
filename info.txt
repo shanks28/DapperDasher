@@ -18,3 +18,6 @@ position is the
 Delta Time calculating delta time helps decouple your game or animation logic from the frame rate and provides a more consistent, 
 responsive, and visually pleasing experience for users. It helps ensure that your application behaves as intended across different systems and devices, regardless of the 
 variability in frame rates.
+
+
+narrowing error occurs when we try to assign a variable of higher presicion to a variable of lower presicion
