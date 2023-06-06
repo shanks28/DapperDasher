@@ -34,11 +34,6 @@ int main()
     Vector2 nebPos{width,height-nebularec.height};
     int nebVel{-200};//nebula x velocity in px/sec since it should move from left to right acting as an obstacle
 
-    Rectangle neb2Rec{0.0,0.0, nebula.width/8, nebula.height/8};
-    Vector2 neb2Pos{width+300,height-nebularec.height};
-    int neb2Frame{};
-    const float neb2updateTime{1.0/16.0};
-    float neb2RunningTime;
     //Nebula Animedata
     AnimeData neb2Data{
         {0.0,0.0,nebula.width/8,nebula.height/8}
@@ -61,22 +56,6 @@ int main()
     scarfyData.updateTime=1.0/12.0;
     scarfyData.runningTime=0.0;
 
-    Rectangle scrafyrec;//compound datatype this is to select which particular image we want to select from the sprite sheet at any given point of time
-    scrafyrec.width=scrafy.width/6;
-    scrafyrec.height=scrafy.height;
-    scrafyrec.x=0;
-    scrafyrec.y=0;
-    //animation frame
-    int frame{};
-    
-    Vector2 scrafyPos;//compound datatype this is for the position of the scarfy sprite on the canvas
-    scrafyPos.x=width/2-scrafyrec.width/2;// this splits the scrafy frame into 2 equal half and thus the image itself appears at the center of the screen
-    scrafyPos.y=height-scrafyrec.height;// since we treate the image as a upper left point
-
-    //nebula update variables
-    int nebFrame{};
-    const float nebUpdateTime{1.0/12.0};
-    float nebRunningTime{};
 
     //int posY{height-rec_height};//here we treat the rectangle as a single point on the top left corner of the rectangel of that width so height of the window would place the point at the bottom of the canvas and subtracting the height od the rectangel will place the actual rectangle on the bottn
     int velocity{0};
@@ -85,16 +64,14 @@ int main()
     //jump velocity
     const int jumpVel{-1000};// px/s
     //update time 
-    const float updateTime{1.0/12.0};//this is the amount of time that should pass between each animation frame
-    float runningTime{0.0};// this is to keep a check of how much time has passed since the last time we updated our animation frame
-
+    
     SetTargetFPS(60); // this tells the system that it should display 60 complete frame per second to  the screen and well if we dont use this function then the sprite will achieve the highest possible frame rate 
     while(!WindowShouldClose())//since window should close will return true iff the x or the escape buttons are pressed
     {// the body of the while loop executes every frame
         BeginDrawing();
         ClearBackground(WHITE);
         const float dT{GetFrameTime()};// this is the time duration between each frame and as the acutal number of frames increases then the dT reduces and viceversa
-        if(scrafyPos.y>=height-scrafyrec.height)// this is the ground check condition
+        if(scarfyData.Pos.y>=height-scarfyData.rec.height)// this is the ground check condition
         {
             //rectangle is on the ground
             isInAir=false;
@@ -111,59 +88,59 @@ int main()
             velocity += jumpVel;// always remember our convention that we need a negative value if we want our sprite to move upward from the bottom of the canvas this makes it jump indirectly
         }
         //update nebula pos
-        nebPos.x+=nebVel*dT;//this is to make it frame rate independent since speed is just rate of change of distance we just add it to the x pos every frame
+        nebData.Pos.x+=nebVel*dT;//this is to make it frame rate independent since speed is just rate of change of distance we just add it to the x pos every frame
         //scarfy pos
         //update the second nubulas position
-        neb2Pos.x+=nebVel*dT;
+        neb2Data.Pos.x+=nebVel*dT;
         
-        scrafyPos.y+=velocity * dT;// this is what actually moves the rectangle we multiply the position with dT because the units change from pizels per sec to pixels per frame
+        scarfyData.Pos.y+=velocity * dT;// this is what actually moves the rectangle we multiply the position with dT because the units change from pizels per sec to pixels per frame
         if(!isInAir)
         {
-            runningTime+=dT;
+            scarfyData.runningTime+=dT;
 
-            if(runningTime>=updateTime)
+            if(scarfyData.runningTime>=scarfyData.updateTime)
             {
             //update running time
-                runningTime=0.0;
-                scrafyrec.x=frame*scrafyrec.width;
-                frame++;
-                if(frame>5)
+                scarfyData.runningTime=0.0;
+                scarfyData.rec.x=scarfyData.frame*scarfyData.rec.width;
+                scarfyData.frame++;
+                if(scarfyData.frame>5)
                 {
-                    frame=0;
+                    scarfyData.frame=0;
                 }
             }
         }
         //update the nebula animation frame
-        nebRunningTime+=dT;
-        if(nebRunningTime>=nebUpdateTime)
+        nebData.runningTime+=dT;
+        if(nebData.runningTime>=nebData.updateTime)
         {
-            nebRunningTime=0.0;
-            nebularec.x=nebFrame* nebularec.width;
-            nebFrame++;
-            if(nebFrame>7)
+            nebData.runningTime=0.0;
+            nebData.rec.x=nebData.frame* nebData.rec.width;
+            nebData.frame++;
+            if(nebData.frame>7)
             {
-                nebFrame=0;
+                nebData.frame=0;
             }
         }
         //update the nebula animation frame
-        neb2RunningTime+=dT;
-        if(neb2RunningTime>=neb2updateTime)
+        neb2Data.runningTime+=dT;
+        if(neb2Data.runningTime>=neb2Data.updateTime)
         {
-            neb2RunningTime=0.0;
-            nebularec.x=neb2Frame* neb2Rec.width;
-            neb2Frame++;
-            if(neb2Frame>7)
+            neb2Data.runningTime=0.0;
+            neb2Data.rec.x=neb2Data.frame* neb2Data.rec.width;
+            neb2Data.frame++;
+            if(neb2Data.frame>7)
             {
-                neb2Frame=0;
+                neb2Data.frame=0;
             }
         }
         
         //Draw nebula
-        DrawTextureRec(nebula,nebularec,nebPos,WHITE);
+        DrawTextureRec(nebula,nebData.rec,nebData.Pos,WHITE);
         // Draw the second nebula
-        DrawTextureRec(nebula,neb2Rec,neb2Pos,RED);
+        DrawTextureRec(nebula,neb2Data.rec,neb2Data.Pos,RED);
         //Draw scarfy        
-        DrawTextureRec(scrafy,scrafyrec,scrafyPos,WHITE);
+        DrawTextureRec(scrafy,scarfyData.rec,scarfyData.Pos,WHITE);
 
         EndDrawing();// this ensures that every frame is correctly rendered by the gpu
     }
