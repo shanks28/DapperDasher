@@ -19,31 +19,20 @@ int main()
     // const int rec_width{50};
     // const int rec_height{80};
     const int gravity{3000};// this is in pixels/s /s
+    const int base_increment{300};
 
     //nebula variables
     Texture2D nebula=LoadTexture("D:/GameDev/DapperDasher/textures/12_nebula_spritesheet.png");//this is the sprite sheet itself
-    AnimeData nebData{
-        {0.0,0.0, nebula.width/8, nebula.height/8},//Rectangle rec
-        {windowDimensions[0],windowDimensions[1]-nebula.height/8},//Vector 2 Pos
-        0,//int frame
-        1.0/12.0,//float updateTeime
-        0//Float runningTimeulae[0]
-    };
     Rectangle nebularec{0.0,0.0, nebula.width/8, nebula.height/8}; 
     //this is defined as x,y width and height this is just 1 rectangle
 
-    int nebVel{-200};//nebula x velocity in px/sec since it should move from left to right acting as an obstacle
+    int nebVel{-200};//nebula x velocity in px/sec since it should move from left to right acting as an obstacle]
+
+    const int sizeOfNebulae{6};
 
     //Nebula Animedata
-    AnimeData neb2Data{
-        {0.0,0.0,nebula.width/8,nebula.height/8}
-        ,{windowDimensions[0]+300,windowDimensions[1]-nebula.height/8}
-        ,0,
-        1.0/16.0
-        ,0.0
-    };
-    AnimeData nebulae[2]{};
-    for(int i=0;i<2;i++)
+    AnimeData nebulae[sizeOfNebulae]{};
+    for(int i=0;i<sizeOfNebulae;i++)
     {
         nebulae[i].rec.x=0.0;
         nebulae[i].rec.y=0.0;
@@ -53,8 +42,16 @@ int main()
         nebulae[i].frame=0;
         nebulae[i].runningTime=0.0;
         nebulae[i].updateTime=1.0/16.0;
+    }
+    for(int i=0;i<sizeOfNebulae;i++)// this is just o set it explicitly
+    {
+        nebulae[i].Pos.x=windowDimensions[0]+(i*base_increment);
 
     }
+    // nebulae[0].Pos.x=windowDimensions[0];
+    // nebulae[1].Pos.x=windowDimensions[0]+300;
+    // nebulae[2].Pos.x=windowDimensions[0]+600;
+
 
     //scarfy variables
     Texture2D scrafy=LoadTexture("D:/GameDev/DapperDasher/textures/scarfy.png"); // this is a compound data type essentially making an object of the class texture2D and we can access all the functions  that come with the class and use it on the object itself
@@ -101,10 +98,14 @@ int main()
             velocity += jumpVel;// always remember our convention that we need a negative value if we want our sprite to move upward from the bottom of the canvas this makes it jump indirectly
         }
         //update nebula pos
-        nebulae[0].Pos.x+=nebVel*dT;//this is to make it frame rate independent since speed is just rate of change of distance we just add it to the x pos every frame
+        for(int i=0;i<sizeOfNebulae;i++)
+        {
+            //update the position of each nebula
+            nebulae[i].Pos.x+=nebVel*dT;
+        }
+        //this is to make it frame rate independent since speed is just rate of change of distance we just add it to the x pos every frame
         //scarfy pos
         //update the second nubulas position
-        nebulae[1].Pos.x+=nebVel*dT;
         
         scarfyData.Pos.y+=velocity * dT;// this is what actually moves the rectangle we multiply the position with dT because the units change from pizels per sec to pixels per frame
         if(!isInAir)
@@ -124,34 +125,27 @@ int main()
             }
         }
         //update the nebula animation frame
-        nebulae[0].runningTime+=dT;
-        if(nebulae[0].runningTime>=nebulae[0].updateTime)
+        for(int i=0;i<sizeOfNebulae;i++)
         {
-            nebulae[0].runningTime=0.0;
-            nebulae[0].rec.x=nebulae[0].frame* nebulae[0].rec.width;
-            nebulae[0].frame++;
-            if(nebulae[0].frame>7)
+            if(nebulae[i].runningTime>=nebulae[0].updateTime)
             {
-                nebulae[0].frame=0;
+                nebulae[i].runningTime=0.0;
+                nebulae[i].rec.x=nebulae[i].frame* nebulae[i].rec.width;
+                nebulae[i].frame++;
+                if(nebulae[i].frame>7)
+                {
+                    nebulae[i].frame=0;
+                }
             }
         }
-        //update the nebula animation frame
-        nebulae[1].runningTime+=dT;
-        if(nebulae[1].runningTime>=nebulae[1].updateTime)
+        nebulae[0].runningTime+=dT;
+        
+        for(int i=0;i<sizeOfNebulae;i++)
         {
-            nebulae[1].runningTime=0.0;
-            nebulae[1].rec.x=neb2Data.frame* neb2Data.rec.width;
-            nebulae[1].frame++;
-            if(nebulae[1].frame>7)
-            {
-                nebulae[1].frame=0;
-            }
+            //Draw the nebula
+            DrawTextureRec(nebula,nebulae[i].rec,nebulae[i].Pos,WHITE);
         }
         
-        //Draw nebula
-        DrawTextureRec(nebula,nebulae[0].rec,nebulae[0].Pos,WHITE);
-        // Draw the second nebula
-        DrawTextureRec(nebula,nebulae[1].rec,nebulae[1].Pos,RED);
         //Draw scarfy        
         DrawTextureRec(scrafy,scarfyData.rec,scarfyData.Pos,WHITE);
 
