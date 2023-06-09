@@ -8,6 +8,29 @@ struct AnimeData
     float updateTime;
     float runningTime;
 };
+bool isOnGround(AnimeData data,int windowHeight)
+{
+    return data.Pos.y>=windowHeight-data.rec.height;
+}
+AnimeData updateAnimeData(AnimeData data,float deltaTime,int animeFrame)
+{
+    //update running time
+    data.runningTime+=deltaTime;
+    if(data.runningTime>=data.updateTime)
+    {
+        data.runningTime=0.0;
+        //update animation frame
+        data.rec.x=data.frame*data.rec.width;
+        data.frame++;
+        if(data.frame>animeFrame)
+        {
+            //resetting the frame to 0 so that it can loop over the entire spirite sheet
+            data.frame=0;
+
+        }
+    }
+    return data;
+}
 int main()
 {
     //window dimentsion
@@ -74,14 +97,20 @@ int main()
     //jump velocity
     const int jumpVel{-1000};// px/s
     //update time 
-    
-    SetTargetFPS(60); // this tells the system that it should display 60 complete frame per second to  the screen and well if we dont use this function then the sprite will achieve the highest possible frame rate 
+    Texture2D background=LoadTexture("textures/far-buildings.png");
+    float bgx{};
+    SetTargetFPS(75); // this tells the system that it should display 60 complete frame per second to  the screen and well if we dont use this function then the sprite will achieve the highest possible frame rate 
     while(!WindowShouldClose())//since window should close will return true iff the x or the escape buttons are pressed
     {// the body of the while loop executes every frame
         BeginDrawing();
         ClearBackground(WHITE);
+        //draw the background
+        
+        Vector2 bgPos{bgx,0.0};// this is to define the starting position of the background texture
+        DrawTextureEx(background,bgPos,0.0,2.0,WHITE);
         const float dT{GetFrameTime()};// this is the time duration between each frame and as the acutal number of frames increases then the dT reduces and viceversa
-        if(scarfyData.Pos.y>=windowDimensions[1]-scarfyData.rec.height)// this is the ground check condition
+        bgx-=20*dT; // this is to make it frame rate independent
+        if(isOnGround(scarfyData,windowDimensions[1]))// this is the ground check condition
         {
             //rectangle is on the ground
             isInAir=false;
@@ -106,37 +135,16 @@ int main()
         //this is to make it frame rate independent since speed is just rate of change of distance we just add it to the x pos every frame
         //scarfy pos
         //update the second nubulas position
-        
+        //this is the animation frame for the scarfy spirite
         scarfyData.Pos.y+=velocity * dT;// this is what actually moves the rectangle we multiply the position with dT because the units change from pizels per sec to pixels per frame
         if(!isInAir)
         {
-            scarfyData.runningTime+=dT;
-
-            if(scarfyData.runningTime>=scarfyData.updateTime)
-            {
-            //update running time
-                scarfyData.runningTime=0.0;
-                scarfyData.rec.x=scarfyData.frame*scarfyData.rec.width;
-                scarfyData.frame++;
-                if(scarfyData.frame>5)
-                {
-                    scarfyData.frame=0;
-                }
-            }
+            scarfyData=updateAnimeData(scarfyData,dT,5);
         }
         //update the nebula animation frame
         for(int i=0;i<sizeOfNebulae;i++)
         {
-            if(nebulae[i].runningTime>=nebulae[0].updateTime)
-            {
-                nebulae[i].runningTime=0.0;
-                nebulae[i].rec.x=nebulae[i].frame* nebulae[i].rec.width;
-                nebulae[i].frame++;
-                if(nebulae[i].frame>7)
-                {
-                    nebulae[i].frame=0;
-                }
-            }
+            nebulae[i]=updateAnimeData(nebulae[i],dT,7);
         }
         nebulae[0].runningTime+=dT;
         
@@ -153,5 +161,6 @@ int main()
     }
     UnloadTexture(scrafy);
     UnloadTexture(nebula);
+    UnloadTexture(background);
     CloseWindow();// this function is just included for convention as it uses some under the hood functionaloty to actually close the window
 }
