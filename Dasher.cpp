@@ -71,6 +71,7 @@ int main()
         nebulae[i].Pos.x=windowDimensions[0]+(i*base_increment);
 
     }
+    
     // nebulae[0].Pos.x=windowDimensions[0];
     // nebulae[1].Pos.x=windowDimensions[0]+300;
     // nebulae[2].Pos.x=windowDimensions[0]+600;
@@ -98,18 +99,58 @@ int main()
     const int jumpVel{-1000};// px/s
     //update time 
     Texture2D background=LoadTexture("textures/far-buildings.png");
-    float bgx{};
-    SetTargetFPS(75); // this tells the system that it should display 60 complete frame per second to  the screen and well if we dont use this function then the sprite will achieve the highest possible frame rate 
+    //midground and foreground textures
+    Texture2D midGround=LoadTexture("textures/back-buildings.png");
+    Texture2D foreGround=LoadTexture("textures/foreground.png");
+    //Scroll Variables x velocity
+    float mgX{};
+    float fgX{};
+    float bgx{};// this is the position of the background in the x direction
+    SetTargetFPS(60); // this tells the system that it should display 60 complete frame per second to  the screen and well if we dont use this function then the sprite will achieve the highest possible frame rate 
     while(!WindowShouldClose())//since window should close will return true iff the x or the escape buttons are pressed
     {// the body of the while loop executes every frame
         BeginDrawing();
         ClearBackground(WHITE);
+         const float dT{GetFrameTime()};
         //draw the background
-        
-        Vector2 bgPos{bgx,0.0};// this is to define the starting position of the background texture
-        DrawTextureEx(background,bgPos,0.0,2.0,WHITE);
-        const float dT{GetFrameTime()};// this is the time duration between each frame and as the acutal number of frames increases then the dT reduces and viceversa
-        bgx-=20*dT; // this is to make it frame rate independent
+        // this is to make the background move
+        //scroll the backgound
+        bgx-=20*dT;
+        if(bgx<=-background.width*2)
+        {
+            bgx=0.0;
+        }
+        //scroll the midGround
+        mgX-=40*dT;
+        if(mgX<=-midGround.width*2)
+        {
+            mgX=0.0;
+        }
+        //scroll the foreground
+        fgX-=80*dT;
+        if(fgX<=-foreGround.width*2)
+        {
+            fgX=0.0;
+        }
+        //Draw the backGround
+        Vector2 bg1Pos{bgx,0.0};// this is to define the starting position of the background texture
+        DrawTextureEx(background,bg1Pos,0.0,2.0,WHITE);
+        Vector2 bg2Pos{bgx+background.width*2,0.0};
+        DrawTextureEx(background,bg2Pos,0.0,2.0,WHITE);
+        //texture variables
+        //Draw the midGround
+        Vector2 mg1Pos{mgX,0.0};
+        Vector2 mg2Pos{mgX+midGround.width*2,0.0};
+        DrawTextureEx(midGround,mg1Pos,0.0,2.0,WHITE);
+        DrawTextureEx(midGround,mg2Pos,0.0,2.0,WHITE);
+        //Draw the foreGround
+        Vector2 fg1Pos{fgX,0.0};
+        Vector2 fg2Pos{fgX+foreGround.width*2.0,0.0};
+        DrawTextureEx(foreGround,fg1Pos,0.0,2.0,WHITE);
+        DrawTextureEx(foreGround,fg2Pos,0.0,2.0,WHITE);
+        // this should be of the order backgound------->midground and foreground
+       // this is the time duration between each frame and as the acutal number of frames increases then the dT reduces and viceversa
+         // this is to make it frame rate independent
         if(isOnGround(scarfyData,windowDimensions[1]))// this is the ground check condition
         {
             //rectangle is on the ground
@@ -159,6 +200,8 @@ int main()
 
         EndDrawing();// this ensures that every frame is correctly rendered by the gpu
     }
+    UnloadTexture(midGround);
+    UnloadTexture(foreGround);
     UnloadTexture(scrafy);
     UnloadTexture(nebula);
     UnloadTexture(background);
