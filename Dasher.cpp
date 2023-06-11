@@ -41,8 +41,8 @@ int main()
     //rectangel dimensions
     // const int rec_width{50};
     // const int rec_height{80};
-    const int gravity{3000};// this is in pixels/s /s
-    const int base_increment{300};
+    const int gravity{1000};// this is in pixels/s /s
+    const int base_increment{600};
 
     //nebula variables
     Texture2D nebula=LoadTexture("D:/GameDev/DapperDasher/textures/12_nebula_spritesheet.png");//this is the sprite sheet itself
@@ -71,7 +71,7 @@ int main()
         nebulae[i].Pos.x=windowDimensions[0]+(i*base_increment);
 
     }
-    
+    float finishLine{nebulae[sizeOfNebulae-1].Pos.x};
     // nebulae[0].Pos.x=windowDimensions[0];
     // nebulae[1].Pos.x=windowDimensions[0]+300;
     // nebulae[2].Pos.x=windowDimensions[0]+600;
@@ -96,7 +96,7 @@ int main()
     //is the rectangle in the air
     bool isInAir{};
     //jump velocity
-    const int jumpVel{-1000};// px/s
+    const int jumpVel{-600};// px/s
     //update time 
     Texture2D background=LoadTexture("textures/far-buildings.png");
     //midground and foreground textures
@@ -106,6 +106,7 @@ int main()
     float mgX{};
     float fgX{};
     float bgx{};// this is the position of the background in the x direction
+    bool collision{false};
     SetTargetFPS(60); // this tells the system that it should display 60 complete frame per second to  the screen and well if we dont use this function then the sprite will achieve the highest possible frame rate 
     while(!WindowShouldClose())//since window should close will return true iff the x or the escape buttons are pressed
     {// the body of the while loop executes every frame
@@ -151,6 +152,7 @@ int main()
         // this should be of the order backgound------->midground and foreground
        // this is the time duration between each frame and as the acutal number of frames increases then the dT reduces and viceversa
          // this is to make it frame rate independent
+        
         if(isOnGround(scarfyData,windowDimensions[1]))// this is the ground check condition
         {
             //rectangle is on the ground
@@ -173,6 +175,8 @@ int main()
             //update the position of each nebula
             nebulae[i].Pos.x+=nebVel*dT;
         }
+        //logix for the finish line
+        finishLine+=nebVel * dT;
         //this is to make it frame rate independent since speed is just rate of change of distance we just add it to the x pos every frame
         //scarfy pos
         //update the second nubulas position
@@ -187,9 +191,39 @@ int main()
         {
             nebulae[i]=updateAnimeData(nebulae[i],dT,7);
         }
-        nebulae[0].runningTime+=dT;
-        
-        for(int i=0;i<sizeOfNebulae;i++)
+        //nebulae[0].runningTime+=dT;
+        for(AnimeData nebula:nebulae)
+        {
+            float pad{50};
+
+            Rectangle nebRec{
+                nebula.Pos.x+pad,nebula.Pos.y+pad,
+                nebula.rec.width-2*pad,
+                nebula.rec.height-2*pad
+            };
+            Rectangle scarfyRec{
+                scarfyData.Pos.x,
+                scarfyData.Pos.y,
+                scarfyData.rec.width,
+                scarfyData.rec.height
+            };
+            if(CheckCollisionRecs(nebRec,scarfyRec))
+            {
+                collision=true;
+            }
+        }
+        if(collision==true)//this is when we lose the game
+        {
+            DrawText("Game Over!",windowDimensions[0]/4,windowDimensions[1]/2,43,RED);
+        }
+        else if(scarfyData.Pos.x>=finishLine)
+        {
+            DrawText("You WIn!",windowDimensions[0]/4,windowDimensions[0]/2,43,RED);
+
+        }
+        else// this  block means that the 2 characters have not collided
+        {
+            for(int i=0;i<sizeOfNebulae;i++)
         {
             //Draw the nebula
             DrawTextureRec(nebula,nebulae[i].rec,nebulae[i].Pos,WHITE);
@@ -198,6 +232,8 @@ int main()
         //Draw scarfy        
         DrawTextureRec(scrafy,scarfyData.rec,scarfyData.Pos,WHITE);
 
+        }
+        
         EndDrawing();// this ensures that every frame is correctly rendered by the gpu
     }
     UnloadTexture(midGround);
